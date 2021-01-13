@@ -1,0 +1,71 @@
+{% extends 'frontend/base.html' %}
+{% load dict_value_by_key %}
+
+{% block content %}
+<div class="container">
+  <div id="task-container">
+      <div id="form-wrapper">
+		  <h4 class="display-8 text-center">ADD TASK<h4><hr>
+			{% if request.user.is_authenticated %}
+          <form id="form" method="POST" action="/create_task/">
+            {% csrf_token %}
+              <div class="flex-wrapper">
+                  <div style="flex: 6;">
+                      <input id="title" class="form-control" type="text" name="title" placeholder="Add Task title">
+                  </div>
+                  <div style="flex: 6;">
+                    <select class="form-control status" name="status"  id="status">Status
+                      <option value="Created">Created</option>
+					  <option value="Pending">Pending</option>
+					  <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                  <div style="flex: 6;">
+                    <select class="form-control assignee" name="assignee"  id="assignee">Assign Other User
+                      {% for account in accounts %}
+                      <option value="{{account.userid}}">{{account.username}}</option>
+                      {% endfor %}
+                    </select>
+				  </div>
+				  
+                  <div style="flex: 1;">
+                      <input id="submit" class="btn" type="submit" value="ADD">
+                  </div>
+              </div>
+		  </form> 
+		  <hr>{% endif %}
+      </div>
+      <div id="list-wrapper">
+        <div id="data-row" class="task-wrapper flex-wrapper">
+			<table class="table table-bordered table-hover" id="myTickets">
+				<thead>
+				  <tr> 
+					<th class="th-width-sm">Task Title </th>
+					<th class="th-width-sm">Created Date & Time </th> 
+					<th class="th-width-sm">Assigned By </th> 
+					<th class="th-width-sm">Status </th> 
+				  </tr>
+				  </thead>
+				  <tbody id="mysearchdata">
+					{% for task in tasks %}
+					<tr>
+						<td>{{task.title}}</td>
+						<td>{{task.create_at}}</td>
+						<td>{% with task.assignee as task_members %}
+								{% for member in task_members  %}
+									{{usersdata|get_dict_value:member}}
+								{% endfor %}
+							{% endwith %}
+						</td>
+					  <td>{{task.status}}</td>
+					</tr>
+					{% endfor %}
+					<tbody>
+			</table>		
+		</div>
+		
+      </div>
+  </div>
+</div>
+
+{% endblock content %}
